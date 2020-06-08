@@ -14,9 +14,11 @@ import java.util.Date;
  */
 public class App {
     public static void main(String[] args) throws IOException {
-        File wikiDir = new File("./res/wiki");
+	System.err.println(new File(".").getCanonicalPath());
+        File wikiDir = new File("../inferrust_rs/inferrust/res/bsbm");
+	System.err.println(wikiDir.getCanonicalPath());
         for (SupportedProfile profile : new SupportedProfile[]{SupportedProfile.RDFSPLUS, SupportedProfile.RDFS, SupportedProfile.RHODF}) {
-
+	
             for (File file : wikiDir.listFiles()) {
                 String myOntology = file.getCanonicalPath();
                 System.err.println(myOntology);
@@ -44,20 +46,20 @@ public class App {
                             .setRulesProfile(profile)
                             .build();
                     final Inferray inferray = new Inferray(config);
-                    long t = new Date().getTime();
+                    long t = System.nanoTime();
                     inferray.parse(myOntology);
-                    long load = new Date().getTime() - t;
+                    double load = (System.nanoTime() - t)/1e9;
                     long size = size(inferray.getMainTripleStore().size());
-                    t = new Date().getTime();
+                    t = System.nanoTime();
                     inferray.process();
-                    long process = new Date().getTime() - t;
-                    System.out.printf("java,%s,%d,%d,%d\n", profile.name(), size, load, process);
+                    double process = (System.nanoTime() - t)/1e9;
+                    System.out.printf("java,%s,%d,%f,%f\n", profile.name(), size, load, process);
                 }
             }
         }
     }
 
     static long size(long size) {
-        return (size % 10 == 0 ? size : size - 59);
+        return (size % 10 == 0 ? size : size);
     }
 }
